@@ -1,49 +1,54 @@
-name: linter
+name: lint
 
 on:
   push:
     branches:
-      - develop
       - main
-      - master
-      - workos
   pull_request:
     branches:
-      - develop
       - main
-      - master
-      - workos
-
-permissions:
-  contents: write
 
 jobs:
-  quality:
+  lint:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
 
-      - name: Install Dependencies
-        run: |
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-      - name: Run Pint
-        run: composer lint
+      - name: Install PHP Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Format Frontend
-        run: npm run format
+      - name: Install Node Dependencies
+        run: npm ci
 
-      - name: Lint Frontend
-        run: npm run lint
+      - name: Build Assets
+        run: npm run build
 
-      # - name: Commit Changes
-      #   uses: stefanzweifel/git-auto-commit-action@v7
-      #   with:
-      #     commit_message: fix code style
-      #     commit_options: '--no-verify'
+      - name: Pint Check
+        run: ./vendor/bin/pint --parallel --test
+
+      - name: Rector Check
+        run: ./vendor/bin/rector --dry-run
+
+      - name: ESLint Check
+        run: npm run lint:check
+
+      - name: Prettier Check
+        run: npm run format:check
+
+      - name: TypeScript Check
+        run: npm run types:check
+
+      - name: PHPStan
+        run: ./vendor/bin/phpstan --memory-limit=512M
