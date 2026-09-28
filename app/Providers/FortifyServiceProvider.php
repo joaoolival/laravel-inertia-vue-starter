@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
@@ -9,11 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
-class FortifyServiceProvider extends ServiceProvider
+final class FortifyServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -85,5 +88,29 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($throttleKey);
         });
+
+        RateLimiter::for('register', fn (Request $request): array => $this->publicFormLimits($request));
+
+        RateLimiter::for('password-reset-link', fn (Request $request): array => $this->publicFormLimits($request));
+    }
+
+    /**
+     * Get the per-IP limits for public forms that send emails, reported as a
+     * validation error on the email field so the form can display it.
+     *
+     * @return array<int, Limit>
+     */
+    private function publicFormLimits(Request $request): array
+    {
+        $tooManyAttempts = fn (Request $request, array $headers): never => throw ValidationException::withMessages([
+            Fortify::email() => __('Too many attempts. Please try again in :seconds seconds.', [
+                'seconds' => $headers['Retry-After'] ?? 60,
+            ]),
+        ])->status(429);
+
+        return [
+            Limit::perMinute(5)->by('minute:'.$request->ip())->response($tooManyAttempts),
+            Limit::perHour(20)->by('hour:'.$request->ip())->response($tooManyAttempts),
+        ];
     }
 }

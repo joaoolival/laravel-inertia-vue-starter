@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { Link } from '@inertiajs/vue3';
+import { BookOpen, Folder, LayoutGrid, Menu, Search } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -32,6 +31,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
+import { useAuthUser } from '@/composables/useAuthUser';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
 import { toUrl } from '@/lib/utils';
@@ -46,8 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-const page = usePage();
-const auth = computed(() => page.props.auth);
+const user = useAuthUser();
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const activeItemStyles =
@@ -249,20 +248,20 @@ const rightNavItems: NavItem[] = [
                                     class="size-8 overflow-hidden rounded-full"
                                 >
                                     <AvatarImage
-                                        v-if="auth.user.avatar"
-                                        :src="auth.user.avatar"
-                                        :alt="auth.user.name"
+                                        v-if="user.avatar"
+                                        :src="user.avatar"
+                                        :alt="user.name"
                                     />
                                     <AvatarFallback
                                         class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ getInitials(auth.user?.name) }}
+                                        {{ getInitials(user.name) }}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="w-56">
-                            <UserMenuContent :user="auth.user" />
+                            <UserMenuContent :user="user" />
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
+use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/app',
         __DIR__.'/bootstrap/app.php',
+        __DIR__.'/config',
         __DIR__.'/database',
         __DIR__.'/public',
-    ])
-    ->withSkip([
-        AddOverrideAttributeToOverriddenMethodsRector::class,
+        __DIR__.'/routes',
+        __DIR__.'/tests',
     ])
     ->withPreparedSets(
         deadCode: true,
@@ -23,4 +23,11 @@ return RectorConfig::configure()
         earlyReturn: true,
         codingStyle: true,
     )
-    ->withPhpSets();
+    ->withPhpSets()
+    ->withComposerBased(laravel: true)
+    ->withSets([
+        LaravelSetList::LARAVEL_CODE_QUALITY,
+        LaravelSetList::LARAVEL_COLLECTION,
+        LaravelSetList::LARAVEL_TESTING,
+        LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
+    ]);

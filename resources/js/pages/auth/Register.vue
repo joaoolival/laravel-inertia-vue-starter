@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import BotProtection from '@/components/BotProtection.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -80,6 +81,8 @@ import { store } from '@/wayfinder/routes/register';
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
+
+                <BotProtection />
 
                 <Button
                     type="submit"

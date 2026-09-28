@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
@@ -12,10 +14,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
 
-class SecurityController extends Controller implements HasMiddleware
+final class SecurityController extends Controller implements HasMiddleware
 {
     /**
      * Get the middleware that should be assigned to the controller.
+     *
+     * @return array<int, Middleware>
      */
     public static function middleware(): array
     {
@@ -49,7 +53,7 @@ class SecurityController extends Controller implements HasMiddleware
     public function update(PasswordUpdateRequest $request): RedirectResponse
     {
         $request->user()->update([
-            'password' => $request->password,
+            'password' => $request->validated('password'),
         ]);
 
         return back();
