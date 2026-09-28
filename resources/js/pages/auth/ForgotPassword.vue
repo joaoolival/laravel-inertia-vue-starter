@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import BotProtection from '@/components/BotProtection.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,8 @@ defineProps<{
                     />
                     <InputError :message="errors.email" />
                 </div>
+
+                <BotProtection />
 
                 <div class="my-6 flex items-center justify-start">
                     <Button

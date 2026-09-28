@@ -1,5 +1,3 @@
-import type { Auth } from '@/types/auth';
-
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
     interface ImportMetaEnv {
@@ -13,17 +11,6 @@ declare module 'vite/client' {
     }
 }
 
-declare module '@inertiajs/core' {
-    export interface InertiaConfig {
-        sharedPageProps: {
-            name: string;
-            auth: Auth;
-            sidebarOpen: boolean;
-            [key: string]: unknown;
-        };
-    }
-}
-
 declare module 'vue' {
     interface ComponentCustomProperties {
         $inertia: typeof Router;
@@ -31,3 +18,5 @@ declare module 'vue' {
         $headManager: ReturnType<typeof createHeadManager>;
     }
 }
+
+export {};

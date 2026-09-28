@@ -4,10 +4,9 @@ An opinionated Laravel + Inertia + Vue starter kit with strict defaults, full Ty
 
 ## Stack
 
-- **PHP 8.4** / **Laravel 13** / **Inertia v2** / **Vue 3** / **Tailwind CSS v4**
+- **PHP 8.4+** / **Laravel 13** / **Inertia v3** / **Vue 3** / **Tailwind CSS v4**
 - **PostgreSQL 18** via Docker (Laravel Sail)
-- **Redis** for caching and sessions
-- **Meilisearch** for search
+- **Redis** available for cache and queues
 - **Mailpit** for local email testing
 - **Wayfinder (dev-next)** for full TypeScript generation (routes, actions, models, enums, Inertia props)
 
@@ -16,7 +15,9 @@ An opinionated Laravel + Inertia + Vue starter kit with strict defaults, full Ty
 - **Type-safe full stack** — Strict PHP 8.4 typing + strict TypeScript with no `any` types
 - **Wayfinder code generation** — Routes, controller actions, models, and enums as TypeScript imports
 - **Authentication** — Laravel Fortify with login, registration, email verification, password reset, and two-factor authentication (2FA)
-- **Server-side rendering** — SSR support with Inertia
+- **Server-side rendering** — Inertia v3 SSR (auto-detected by the Vite plugin, including in dev)
+- **Laravel Boost** — AI guidelines, agent skills and MCP server preconfigured for Claude Code
+- **Secure defaults** — security headers, mandatory email verification, secure session cookies in production, CI dependency audits and Dependabot
 - **UI components** — Reka UI (shadcn-vue inspired) + Lucide icons + dark/light mode
 - **Code quality automation** — Rector, Pint, PHPStan (level 6), ESLint, Prettier, vue-tsc
 - **Testing** — Pest framework with feature and unit tests
@@ -133,10 +134,13 @@ import { show } from '@/wayfinder/App/Http/Controllers/PostController'
 
 // Import types (models, enums, Inertia page props)
 import { App } from '@/wayfinder/types'
+```
 
-// Use with Inertia forms
-const form = useForm({ name: '' })
-form.submit(store())
+```vue
+<!-- Use with the Inertia <Form> component -->
+<Form v-bind="store.form()" v-slot="{ errors, processing }">
+    ...
+</Form>
 ```
 
 If Vite isn't running, regenerate manually:
@@ -152,8 +156,9 @@ sail artisan wayfinder:generate
 | laravel.test | 80 | Application |
 | pgsql | 5432 | PostgreSQL 18 |
 | redis | 6379 | Redis |
-| meilisearch | 7700 | Meilisearch |
 | mailpit | 8025 | Email dashboard |
+
+Running several Sail projects at once? Override the host ports in `.env` (`APP_PORT`, `VITE_PORT`, `FORWARD_DB_PORT`, `FORWARD_REDIS_PORT`, `FORWARD_MAILPIT_PORT`, `FORWARD_MAILPIT_DASHBOARD_PORT`).
 
 ## License
 
